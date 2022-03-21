@@ -10,7 +10,7 @@ ARG CLI_VERSION
 
 RUN apk add --no-cache \
     dbus udev attr bash util-linux curl openssh-client figlet jq \
-    git build-base coreutils
+    git build-base coreutils linux-headers libc-dev
 
 RUN git clone "https://github.com/FFmpeg/FFmpeg.git" ffmpeg && \
     cd ffmpeg && git checkout 2ca65fc7b74444edd51d5803a2c1e05a801a6023
