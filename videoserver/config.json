@@ -1,0 +1,36 @@
+{
+  "name": "Video Server",
+  "version": "0.1",
+  "slug": "videoserver",
+  "description": "Encode videos using ffmpeg and allow access on specified port",
+  "url": "https://github.com/fAuernigg/hassio-addons/tree/master/videoserver",
+  "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
+  "startup": "services",
+  "boot": "auto",
+  "init": false,
+  "hassio_api": true,
+  "host_network": true,
+  "map": [
+  ],
+  "options": {
+    "video_sources": [
+      "http://192.168.10.155/cgi-bin/hi3510/snap.cgi?&-getstream&-chn=2"
+    ]
+  },
+  "schema": {
+    "video_sources": ["str"]
+  },
+  "XXXimage": "fAuernigg/{arch}-addon-videoserver",
+  "services": [],
+  "udev": true,
+  "usb": true,
+  "host_dbus": true,
+  "kernel_modules": true,
+  "privileged": ["SYS_ADMIN", "SYS_RAWIO", "SYS_RESOURCE", "SYS_MODULE"],
+
+  "full_access": true,
+  "devicetree": false,
+
+  "apparmor": true,
+  "host_ipc": true
+}

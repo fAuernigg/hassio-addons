@@ -1,0 +1,9 @@
+#!/usr/bin/with-contenv bashio
+# ==============================================================================
+# Start videoserver service
+# ==============================================================================
+echo "ffmpeg ..."
+ffmpeg -i 'http://192.168.10.155/cgi-bin/hi3510/snap.cgi?&-getstream&-chn=2' -strict -2 http://localhost:8090/n.ffm &
+echo "start ffmpeg done"
+echo "starting ffserver ..."
+ffserver
