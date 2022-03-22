@@ -12,12 +12,13 @@ RUN apk add --no-cache \
     dbus udev attr bash util-linux curl openssh-client figlet jq \
     git build-base coreutils linux-headers libc-dev
 
-RUN git clone "https://github.com/FFmpeg/FFmpeg.git" ffmpeg && \
-    cd ffmpeg && git checkout 2ca65fc7b74444edd51d5803a2c1e05a801a6023
+RUN git clone "https://github.com/FFmpeg/FFmpeg.git" /tmp/ffmpeg && \
+    cd /tmp/ffmpeg && git checkout 2ca65fc7b74444edd51d5803a2c1e05a801a6023
 
-RUN cd ffmpeg && ./configure --disable-x86asm && make -j4 && make install
+RUN cd /tmp/ffmpeg && ./configure --disable-x86asm && make && make install
 
 RUN rm -rf /var/cache/apk/* \
+    && rm -Rf /tmp/ffmpeg \
     && curl -Lso /usr/bin/ha "https://github.com/home-assistant/cli/releases/download/${CLI_VERSION}/ha_${BUILD_ARCH}" \
     && chmod a+x /usr/bin/ha
 
