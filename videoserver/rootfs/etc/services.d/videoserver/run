@@ -2,8 +2,38 @@
 # ==============================================================================
 # Start videoserver service
 # ==============================================================================
-echo "ffmpeg ..."
-ffmpeg -i 'http://192.168.10.155/cgi-bin/hi3510/snap.cgi?&-getstream&-chn=2' -strict -2 http://localhost:8090/n.ffm &
-echo "start ffmpeg done"
+function startStream()
+{
+	while [ 1 ] ; do
+		sleep 1s
+		echo "start ffmpeg $1 from input: $2"
+		#pid=$(ps aux | grep -v grep | grep ffmpeg | grep "$1" | grep "$2")
+		#if [ -n "$pid"  ] ; then
+		#	kill -9 $(echo $pid | cut -d ' ' -f1)
+		#fi
+		ffmpeg -i "$2" -strict -2 "http://localhost:8090/$1.ffm"
+		echo "ffmpeg exit done errorcode: $?"
+	done
+}
+
+function parseFFMpegConf()
+{
+	json=/data/options.json
+	for row in $(jq -cr '.video_sources[]' $json); do
+		name=$(echo $row | jq '.name')
+		input=$(echo $row | jq '.input')
+		if [ -n "$name" && -n "$input" ] ; then
+			startStream "$name" "$input" &
+		else
+			echo "Error invalid config, misssing name or input: $row"
+		fi
+	done
+}
+
+parseFFMpegConf
+
 echo "starting ffserver ..."
-ffserver
+while [ 1 ] ; do
+	ffserver
+	sleep 1s
+done

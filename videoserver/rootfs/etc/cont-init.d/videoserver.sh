@@ -21,7 +21,7 @@ interface=enp0s31f6
 
 cp /usr/share/tempio/ffserver.gtpl /etc/ffserver.conf
 
-# Generate Samba configuration.
+# Generate configuration.
 jq ".interface = \"${interface}\"" /data/options.json \
     | tempio \
       -template /usr/share/tempio/ffserver.gtpl \
