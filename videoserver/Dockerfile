@@ -15,13 +15,18 @@ RUN apk add --no-cache \
 RUN git clone "https://github.com/FFmpeg/FFmpeg.git" /ffmpeg && \
     cd /ffmpeg && git checkout 2ca65fc7b74444edd51d5803a2c1e05a801a6023
 
-RUN cd /ffmpeg && ./configure --disable-x86asm && make && make install
+RUN cd /ffmpeg && ./configure --disable-x86asm
+
+RUN cd /ffmpeg && make && make install
 
 RUN rm -rf /var/cache/apk/* \
+    && rm -Rf /ffmpeg \
     && curl -Lso /usr/bin/ha "https://github.com/home-assistant/cli/releases/download/${CLI_VERSION}/ha_${BUILD_ARCH}" \
     && chmod a+x /usr/bin/ha
 
-#    && rm -Rf /ffmpeg \
-
 # Copy data
 COPY rootfs /
+
+# for pc testing
+#RUN mkdir /data/
+#COPY test/options.json /data/options.json

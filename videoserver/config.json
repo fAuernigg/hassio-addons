@@ -18,11 +18,10 @@
         "name": "n",
         "format": "mjpeg"
       }
-    ],
-    "port": 8090
+    ]
   },
   "schema": {
-    "video_sources": ["str"]
+    "video_sources": [{"input": "str", "name": "str", "format": "str"}]
   },
   "XXXimage": "fAuernigg/{arch}-addon-videoserver",
   "services": [],
@@ -36,5 +35,11 @@
   "devicetree": false,
 
   "apparmor": true,
-  "host_ipc": true
+  "host_ipc": true,
+  "ports": {
+    "8090/tcp": null
+  },
+  "ports_description": {
+    "8090/tcp": "Port of videoserver output stream"
+  }
 }

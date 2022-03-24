@@ -25,8 +25,10 @@ This is an example of a configuration. **_DO NOT USE_** without making the neces
 Fields between `<` and `>` indicate values that are omitted and need to be changed.
 
 ```yaml
-video_server:
-  - http://192.168.0.155/cgi-bin/hi3510/snap.cgi?&-getstream&-chn=2
+video_sources:
+- input: http://192.168.10.155/cgi-bin/hi3510/snap.cgi?&-getstream&-chn=2
+  name: n
+  format: mjpeg
 ```
 
 ### Option `video_server` (optional)

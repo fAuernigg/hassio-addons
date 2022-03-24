@@ -2,9 +2,45 @@
 # ==============================================================================
 # Start videoserver service
 # ==============================================================================
+
+fast="-preset ultrafast"
+vidcopy="-c copy"
+
+
+function startStream()
+{
+        while [ ! -f /run/stopserver ] ; do
+                sleep 1s
+                echo "start ffmpeg $1 from input: $2"
+                ffmpeg -i "$2" $vidcopy $fast -strict -2 "http://localhost:8090/$1.ffm"
+                echo "ffmpeg exit done errorcode: $?"
+        done
+}
+
+
+function parseFFMpegConf()
+{
+        json=/data/options.json
+        for row in $(jq -cr '.video_sources[]' $json); do
+                name=$(echo $row | jq -r '.name')
+                input=$(echo $row | jq -r '.input')
+
+                if [[ -n "$name" && -n "$input" ]] ; then
+                        startStream "$name" "$input" &
+                else
+                        echo "Error invalid config, misssing name or input: $row"
+                fi
+        done
+}
+
+
+echo "starting ffmpeg feeds ..."
+
+parseFFMpegConf
+
 echo "starting ffserver ..."
-ls /tmp/ffmpeg
-while [ 1 ] ; do
+while [ ! -f /run/stopserver ] ; do
 	ffserver
 	sleep 1s
 done
+echo "ffserver loop terminated"

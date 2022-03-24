@@ -1,6 +1,6 @@
 #include <tunables/global>
 
-profile addon_video_server flags=(attach_disconnected,mediate_deleted) {
+profile addon_videoserver flags=(attach_disconnected,mediate_deleted) {
   #include <abstractions/base>
   #include <abstractions/mdns>
   #include <abstractions/samba>

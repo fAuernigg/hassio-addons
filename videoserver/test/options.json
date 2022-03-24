@@ -1,4 +1,11 @@
 {
-    "interface": "",
-    "allow_hosts": ["http://192.168.10.155/cgi-bin/hi3510/snap.cgi?&-getstream&-chn=2"],
+  "video_sources": [
+      {
+	"XXinput": "http://192.168.10.155/cgi-bin/hi3510/snap.cgi?&-getstream&-chn=2",
+	"input": "rtsp://192.168.10.155/12",
+        "name": "n",
+        "format": "mjpeg"
+      }
+  ]
 }
+
