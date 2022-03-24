@@ -15,7 +15,9 @@
   "options": {
     "video_sources": [
         {"input": "http://192.168.10.155/cgi-bin/hi3510/snap.cgi?&-getstream&-chn=2",
-        "name": "n"}
+        "name": "n",
+        "format": "mjpeg"
+      }
     ],
     "port": 8090
   },
