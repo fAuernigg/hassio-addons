@@ -34,7 +34,6 @@
   "full_access": true,
   "devicetree": false,
 
-  "apparmor": true,
   "host_ipc": true,
   "ports": {
     "8090/tcp": null
