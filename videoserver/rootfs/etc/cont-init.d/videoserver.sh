@@ -41,6 +41,27 @@ function addServerConf()
     >> /etc/ffserver.conf
 }
 
+function addFFMpegService()
+{
+	mkdir -p "/etc/services.d/ffmpeg_$1/"
+
+	echo -e "#!/usr/bin/with-contenv bashio\n"\
+		"\n"\
+		"echo \"start ffmpeg $name from input: $input\"\n"\
+		"ffmpeg -i \"$input\" -c copy -strict -2 \"http://localhost:8090/$name.ffm\"\n"\
+		"echo \"ffmpeg $name exited, errorcode: $?\"\n"\
+		 >> "/etc/services.d/ffmpeg_$1/run"
+
+	echo -e "#!/usr/bin/execlineb -S1\n"\
+		"if { s6-test ${1} -ne 0 }\n"\
+		"if { s6-test ${1} -ne 256 }\n\n"\
+		"s6-svscanctl -t /var/run/s6/services\n"\
+		>> "/etc/services.d/ffmpeg_$1/finish"
+
+	chmod a+x /etc/services.d/ffmpeg_$1/*
+}
+
+
 function parseFFMpegConf()
 {
 	json=/data/options.json
@@ -54,14 +75,15 @@ function parseFFMpegConf()
 
 		if [[ -n "$name" && -n "$input" ]] ; then
 			addServerConf "$name" "$fmt" 3 "640x360"
+			addFFMpegService "$name" "$input"
 		else
 			echo "Error invalid config, misssing name or input: $row"
 		fi
 	done
 }
 
-
 parseFFMpegConf
+
 
 echo "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 echo "X ffserver.conf                   X"
