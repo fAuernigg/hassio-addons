@@ -70,8 +70,9 @@ function parseFFMpegConf()
 		input=$(echo $row | jq -r '.input')
 		fmt=$(echo $row | jq '.format')
 		if [[ ! -n "$fmt" ]] ; then
-			fmt="mjpeg"
+			fmt="mpjpeg"
 		fi
+		echo -e "Found Video config: \n\tName: $name\n\tstream: $input\n\tFormat: $fmt"
 
 		if [[ -n "$name" && -n "$input" ]] ; then
 			addServerConf "$name" "$fmt" 3 "640x360"
