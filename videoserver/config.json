@@ -1,6 +1,6 @@
 {
   "name": "Video Server",
-  "version": "0.31",
+  "version": "0.4",
   "slug": "videoserver",
   "description": "Encode videos using ffmpeg and allow access on specified port",
   "url": "https://github.com/fAuernigg/hassio-addons/tree/master/videoserver",
