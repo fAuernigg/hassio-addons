@@ -10,17 +10,23 @@ killed=0
 while [ 1 ] ; do
     listeners=$(netstat -tpn | grep ffserver | grep -v "127.0.0.1" || /bin/true 2>&1)
     if [[ -n "$listeners" ]] ; then
-        rm $stopfile 2>&1 || /bin/true
-        killed=0
-    elif [ $killed -eq 0 ] ; then
-        touch $stopfile || /bin/true
-        killall ffmpeg || /bin/true
-        killed=1
+        if [[ $killed -eq 1 ]] ; then
+                echo $(date) ": Starting feeds ..."
+                rm $stopfile 2>&1 || /bin/true
+                killed=0
+                sleep 5s
+        fi
     else
-        touch $stopfile || /bin/true
+        if [[ $killed -eq 0 ]] ; then
+                echo $(date) ": Stopping feeds ..."
+                touch $stopfile || /bin/true
+                killall ffmpeg || /bin/true
+                killed=1
+        fi
     fi
 
     sleep 0.1s
 done
+
 
 echo "feed watchdog exited, errorcode: $?"
