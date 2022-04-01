@@ -71,19 +71,20 @@ function parseFFMpegConf()
 		name=$(echo $row | jq -r '.name')
 		input=$(echo $row | jq -r '.input')
 		fmt=$(echo $row | jq '.format')
-		if [[ ! -n "$fmt" ]] ; then
+		if [[ ! -n "$fmt" || "$fmt" == "null" ]] ; then
 			fmt="mpjpeg"
 		fi
-		res=$(echo $row | jq '.resolution')
-		if [[ ! -n "$res" ]] ; then
+		res=$(echo $row | jq -r '.resolution')
+		if [[ ! -n "$res" || "$res" == "null" ]] ; then
 			res="640x360"
 		fi
-		fps=$(echo $row | jq '.fps')
-		if [[ ! -n "$fps" ]] ; then
+		fps=$(echo $row | jq -r '.fps')
+		if [[ ! -n "$fps" || "$fps" == "null" ]] ; then
 			fps=3
 		fi
 
-		echo -e "Found Video config: \n\tName: $name\n\tstream: $input\n\tFormat: $fmt"
+		echo -e "Found Video config: \n\tName: $name\n\tstream: $input"\
+				"\n\tformat: $fmt\n\tresolution: $res\n\tfps: $fps"
 
 		if [[ -n "$name" && -n "$input" ]] ; then
 			addServerConf "$name" "$fmt" $fps "$res"
