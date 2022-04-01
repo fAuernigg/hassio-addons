@@ -5,9 +5,4 @@
 if { s6-test ${1} -ne 0 }
 if { s6-test ${1} -ne 256 }
 
-touch /run/stopfeeds
-killall ffmpeg
-killall ffserver
-rm /run/stopfeeds
-
 s6-svscanctl -t /var/run/s6/services

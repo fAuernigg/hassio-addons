@@ -26,9 +26,11 @@ Fields between `<` and `>` indicate values that are omitted and need to be chang
 
 ```yaml
 video_sources:
-- input: http://192.168.10.155/cgi-bin/hi3510/snap.cgi?&-getstream&-chn=2
-  name: n
-  format: mpjpeg
+  - input: http://192.168.10.155/cgi-bin/hi3510/snap.cgi?&-getstream&-chn=2
+    name: n
+    format: mpjpeg
+    resolution": "640x360"
+    fps: 3
 ```
 
 ### Option `video_server` (optional)

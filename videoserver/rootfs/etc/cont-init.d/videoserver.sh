@@ -47,8 +47,10 @@ function addFFMpegService()
 
 	echo -e "#!/usr/bin/with-contenv bashio\n"\
 		"\n"\
+		"while [ -e /run/stopfeeds ] ; do sleep 0.1s ; done\n"\
+		"\n"\
 		"echo \"start ffmpeg $name from input: $input\"\n"\
-		"ffmpeg -i \"$input\" -c copy -strict -2 \"http://localhost:8090/$name.ffm\"\n"\
+		"ffmpeg -i \"$input\" -c copy -strict -2 \"http://localhost:$port/$name.ffm\"\n"\
 		"echo \"ffmpeg $name exited, errorcode: $?\"\n"\
 		 >> "/etc/services.d/ffmpeg_$1/run"
 
@@ -72,10 +74,19 @@ function parseFFMpegConf()
 		if [[ ! -n "$fmt" ]] ; then
 			fmt="mpjpeg"
 		fi
+		res=$(echo $row | jq '.resolution')
+		if [[ ! -n "$res" ]] ; then
+			res="640x360"
+		fi
+		fps=$(echo $row | jq '.fps')
+		if [[ ! -n "$fps" ]] ; then
+			fps=3
+		fi
+
 		echo -e "Found Video config: \n\tName: $name\n\tstream: $input\n\tFormat: $fmt"
 
 		if [[ -n "$name" && -n "$input" ]] ; then
-			addServerConf "$name" "$fmt" 3 "640x360"
+			addServerConf "$name" "$fmt" $fps "$res"
 			addFFMpegService "$name" "$input"
 		else
 			echo "Error invalid config, misssing name or input: $row"
