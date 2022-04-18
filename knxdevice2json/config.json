@@ -11,8 +11,8 @@
   "hassio_api": true,
   "host_network": true,
   "map": [
-    "share" : "rw",
-    "media" : "rw"
+    "share:rw",
+    "media:rw"
   ],
   "options": {
     "topic": "Device/jsonconfig"
