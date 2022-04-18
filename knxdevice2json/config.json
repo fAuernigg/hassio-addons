@@ -31,7 +31,7 @@
 
   "host_ipc": true,
   "ports": {
-    "8090/tcp": null
+    "7273/tcp": null
   },
   "ports_description": {
     "7273/tcp": "Port for knxproj web upload"
