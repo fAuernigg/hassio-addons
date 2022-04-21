@@ -1,0 +1,25 @@
+#!/usr/bin/with-contenv bashio
+# ==============================================================================
+# Start knxdevice2json
+# ==============================================================================
+
+echo "Starting knxdevice2json"
+
+json=/data/options.json
+tt=$(jq -cr ".topic" $json)
+
+while [ -n "$tt" ] ; do
+	msg=$(mosquitto_sub -t "$tt" -C 1)
+	if [[ -n "$msg" ]] ; then
+		if [ $(echo $msg | wc -w) -ne 3  ] ; then
+			echo Error invalid msg param count: $msg, $(echo $msg | wc -w)
+		else
+			sendKnxProjConfig.sh $msg
+		fi
+		sleep 1s
+	else
+		sleep 0.5s
+	fi
+done
+
+echo "knxdevice2json exited, errorcode: $?"
