@@ -1,6 +1,6 @@
 {
   "name": "KnxDevice 2 Json",
-  "version": "0.13",
+  "version": "0.14",
   "slug": "knxdevice2json",
   "description": "Convert device config of knxproj to json and publish in mqtt topic.",
   "url": "https://github.com/fAuernigg/hassio-addons/tree/master/knxdevice2json",
@@ -31,11 +31,5 @@
   "full_access": true,
   "devicetree": false,
 
-  "host_ipc": true,
-  "ports": {
-    "7273/tcp": null
-  },
-  "ports_description": {
-    "7273/tcp": "Port for knxproj web upload"
-  }
+  "host_ipc": true
 }

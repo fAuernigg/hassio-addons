@@ -10,9 +10,9 @@ fi
 echo "Using server port: $port"
 
 # Generate configuration.
-jq ".port = \"${port}\"" /data/options.json \
-    | tempio \
-      -template /usr/share/tempio/knxdevice2json.gtpl \
-      -out /etc/knxdevice2json.conf
+#jq ".port = \"${port}\"" /data/options.json \
+#    | tempio \
+#      -template /usr/share/tempio/knxdevice2json.gtpl \
+#      -out /etc/knxdevice2json.conf
 
 exit 0
