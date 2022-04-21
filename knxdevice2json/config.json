@@ -15,7 +15,7 @@
     "media:rw"
   ],
   "options": {
-    "topic": "Device/jsonconfig"
+    "topic": "knxdevice2json/sendconfig2device"
   },
   "schema": {
     "topic": "str"
