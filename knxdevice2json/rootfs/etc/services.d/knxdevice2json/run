@@ -7,14 +7,15 @@ echo "Starting knxdevice2json"
 
 json=/data/options.json
 tt=$(jq -cr ".topic" $json)
+knxproj=$(jq -cr ".knxprojfile" $json)
 
-while [ -n "$tt" ] ; do
+while [ -n "$tt" && -n "$knxproj" ] ; do
 	msg=$(mosquitto_sub -t "$tt" -C 1)
 	if [[ -n "$msg" ]] ; then
 		if [ $(echo $msg | wc -w) -ne 3  ] ; then
 			echo Error invalid msg param count: $msg, $(echo $msg | wc -w)
 		else
-			sendKnxProjConfig.sh $msg
+			sendKnxProjConfig.sh $msg $knxproj
 		fi
 		sleep 1s
 	else
