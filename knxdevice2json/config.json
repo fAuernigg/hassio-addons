@@ -16,9 +16,11 @@
   ],
   "options": {
     "topic": "knxdevice2json/sendconfig2device"
+    "knxprojfile": "/share/knxproj/ETSlatest.knxproj"
   },
   "schema": {
     "topic": "str"
+    "knxprojfile": "str"
   },
   "XXXimage": "fAuernigg/{arch}-addon-knxdevice2json",
   "services": [],
