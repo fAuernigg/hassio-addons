@@ -12,7 +12,7 @@ knxproj=$(jq -cr ".knxprojfile" $json)
 while [[ -n "$tt" && -n "$knxproj" ]] ; do
 	msg=$(mosquitto_sub -t "$tt" -C 1)
 	if [[ -n "$msg" ]] ; then
-		if [ $(echo $msg | wc -w) -ne 3  ] ; then
+		if [ $(echo $msg | wc -w) -ne 2  ] ; then
 			echo Error invalid msg param count: $msg, $(echo $msg | wc -w)
 		else
 			sendKnxProjConfig.sh $msg $knxproj
