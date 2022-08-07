@@ -1,6 +1,6 @@
 {
   "name": "KnxDevice 2 Json",
-  "version": "0.16b",
+  "version": "0.16c",
   "slug": "knxdevice2json",
   "description": "Convert device config of knxproj to json and publish in mqtt topic.",
   "url": "https://github.com/fAuernigg/hassio-addons/tree/master/knxdevice2json",
@@ -22,8 +22,10 @@
     "topic": "str",
     "knxprojfile": "str"
   },
-  "XXXimage": "fAuernigg/{arch}-addon-knxdevice2json",
-  "services": [],
+  "Disabled_image": "fAuernigg/{arch}-addon-knxdevice2json",
+  "services": [
+    "mqtt:want"
+  ],
   "udev": true,
   "usb": true,
   "host_dbus": true,
