@@ -16,6 +16,8 @@ RUN apk add --no-cache \
 # Copy data
 COPY rootfs /
 
+RUN chmod a+x /etc/cont-init.d/knxdevice2proj.sh /etc/cont-init.d/0.banner.sh
+
 # for pc testing
 #RUN mkdir /data/
 #COPY test/options.json /data/options.json
