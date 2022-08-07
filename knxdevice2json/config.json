@@ -1,6 +1,6 @@
 {
   "name": "KnxDevice 2 Json",
-  "version": "0.16a",
+  "version": "0.16b",
   "slug": "knxdevice2json",
   "description": "Convert device config of knxproj to json and publish in mqtt topic.",
   "url": "https://github.com/fAuernigg/hassio-addons/tree/master/knxdevice2json",
