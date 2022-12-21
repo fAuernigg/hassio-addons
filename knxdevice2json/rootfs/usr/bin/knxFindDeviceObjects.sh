@@ -30,8 +30,19 @@ deviceStart=""
 deviceStop=""
 data=""
 
+p=P-0128
+
+i=100
+while [[ $i -le 999 ]] ; do
+	p="P-0$i"
+	if [[ -f "$folder/$p/0.xml" ]] ; then
+		break
+	fi
+	i=$((i+1))
+done
+
 #replace/remove "xmlns= " attrib for performance problems
-xml="$folder/P-0128/0.xml"
+xml="$folder/$p/0.xml"
 
 # remove online lookup causing xmlns attribute. (link does not exist)
 sed -i 's/ xmlns=/ NIXxmlns=/' $xml
@@ -122,7 +133,7 @@ i=0
 
 # find all references group addresses and replace address by slash separated rep.
 #echo $deviceXml | while read -r line ; do
-cat "$folder/P-0128/0.xml" | while read -r line ; do
+cat "$folder/$p/0.xml" | while read -r line ; do
 	if [[ "X$deviceStart" == "X" ]] ; then
 		deviceStart=$(echo $line | sed -e  "s/^.*\\<DeviceInstance Id=\"\(.\+\)\" Address=\"[0-9]\+\" Name=\"\($deviceName.*\)\".*$/\2=\1/g;tx;d;:x")
 		#deviceStart=$(echo "$line" | grep -E '\<DeviceInstance Id=\".*\" Address=\".*\" Name=\"$deviceName')
@@ -153,8 +164,8 @@ cat "$folder/P-0128/0.xml" | while read -r line ; do
 	fi
 	id=$data
 
-	groupDec=$(cat "$folder/P-0128/0.xml" | sed -e "s/.*<GroupAddress Id=\"$groupId\" Address=\"\([0-9]\+\)\".*/\1/g;tx;d;:x")
-	groupName=$(cat "$folder/P-0128/0.xml" | sed -e "s/.*<GroupAddress Id=\"$groupId\" Address=\"\([0-9]\+\)\" Name=\"\([a-zA-Z0-9 \-\+\._]\+\)\".*/\2/g;tx;d;:x")
+	groupDec=$(cat "$folder/$p/0.xml" | sed -e "s/.*<GroupAddress Id=\"$groupId\" Address=\"\([0-9]\+\)\".*/\1/g;tx;d;:x")
+	groupName=$(cat "$folder/$p/0.xml" | sed -e "s/.*<GroupAddress Id=\"$groupId\" Address=\"\([0-9]\+\)\" Name=\"\([a-zA-Z0-9 \-\+\._]\+\)\".*/\2/g;tx;d;:x")
 	if [[ "X$groupDec" == "X" ]] ; then
 		continue
 	fi
