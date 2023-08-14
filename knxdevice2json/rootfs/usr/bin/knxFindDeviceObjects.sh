@@ -34,12 +34,14 @@ p=P-0128
 
 i=100
 while [[ $i -le 999 ]] ; do
-	p="P-0$i"
-	if [[ -f "$folder/$p/0.xml" ]] ; then
-		break
-	fi
-	i=$((i+1))
+        p="P-0"$(echo "ibase=10;obase=16;$i" |bc)
+        echo "P: $p"
+        if [[ -f "$folder/$p/0.xml" ]] ; then
+                break
+        fi
+        i=$((i+1))
 done
+
 
 #replace/remove "xmlns= " attrib for performance problems
 xml="$folder/$p/0.xml"
