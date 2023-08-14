@@ -35,7 +35,6 @@ p=P-0128
 i=100
 while [[ $i -le 999 ]] ; do
         p="P-0"$(echo "ibase=10;obase=16;$i" |bc)
-        echo "P: $p"
         if [[ -f "$folder/$p/0.xml" ]] ; then
                 break
         fi
