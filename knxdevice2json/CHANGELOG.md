@@ -11,3 +11,7 @@
 ## 0.17
 
 - Fix mosquitto user, pass etc config reload
+
+## 0.20 / 0.21
+
+- Support Segement in knxproj file

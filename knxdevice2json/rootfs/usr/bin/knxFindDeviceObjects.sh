@@ -100,19 +100,19 @@ function printDeviceParams() {
 	return $n
 }
 
-deviceCount=$(xmllint --xpath 'count(//KNX/Project/Installations/Installation/Topology/Area/Line/DeviceInstance[contains(@Name, '$deviceName')])' $xml)
+deviceCount=$(xmllint --xpath 'count(//KNX/Project/Installations/Installation/Topology/Area/Line/DeviceInstance[contains(@Name, "'$deviceName'")])' $xml)
 if [[ $deviceCount -eq 0 ]] ; then
 	segment="Segment/"
 fi
 
-deviceCount=$(xmllint --xpath 'count(//KNX/Project/Installations/Installation/Topology/Area/Line/'$segment'DeviceInstance[contains(@Name, '$deviceName')])' $xml)
+deviceCount=$(xmllint --xpath 'count(//KNX/Project/Installations/Installation/Topology/Area/Line/'$segment'DeviceInstance[contains(@Name, "'$deviceName'")])' $xml)
 
 echo "{\"ComObjects\": ["
 
 n=0
 for (( d=1; d<= $deviceCount ; d++ )); do
 
-	deviceXml=$(xmllint  --xpath '//KNX/Project/Installations/Installation/Topology/Area/Line/'$segment'DeviceInstance[contains(@Name, '$deviceName')]['$d']' $xml)
+	deviceXml=$(xmllint  --xpath '//KNX/Project/Installations/Installation/Topology/Area/Line/'$segment'DeviceInstance[contains(@Name, "'$deviceName'")]['$d']' $xml)
 
 	if [[ "X$deviceXml" == "X" ]] ; then
 		continue
