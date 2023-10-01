@@ -4,18 +4,25 @@ path=$(pwd)
 cd $(dirname $0)
 spath=$(pwd)
 cd $path
+segment=
+
+tmppath="/share/knxtmp/"
+if [[ ! -d "$tmppath" ]] ; then
+	tmppath="/tmp/knxtmp"
+	#echo "Dev environment: Using knx tmp directory: $tmppath"
+fi
 
 f=
-if [[ $# -ne 2 ]] ; then
+if [[ $# -lt 2 ]] ; then
 	echo "Error invalid params: [My.knxproj] [MKA-MyDevice]"
 	exit 13
 fi
 
 f=$1
 
-rm -Rf /share/knxtmp/ ; mkdir -p /share/knxtmp/
+folder=$tmppath$(echo $f | tr "." "-" | tr "/" "_")
 
-folder=/share/knxtmp/$(echo $f | tr "." "-" | tr "/" "_")
+rm -Rf $tmppath ; mkdir -p $tmppath
 unzip -qo $f -d $folder
 
 #filterprefix for my own knx devices
@@ -23,7 +30,7 @@ filterPrefix="MKA-"
 deviceName=$filterPrefix"Hallway"
 
 if [[ $# -ge 2 ]] ; then
-	deviceName=$2
+	deviceName="$2"
 fi
 
 deviceStart=""
@@ -93,20 +100,26 @@ function printDeviceParams() {
 	return $n
 }
 
-deviceCount=$(xmllint --xpath 'count(//KNX/Project/Installations/Installation/Topology/Area/Line/DeviceInstance[contains(@Name, "'$deviceName'")])' $xml)
+deviceCount=$(xmllint --xpath 'count(//KNX/Project/Installations/Installation/Topology/Area/Line/DeviceInstance[contains(@Name, '$deviceName')])' $xml)
+if [[ $deviceCount -eq 0 ]] ; then
+	segment="Segment/"
+fi
+
+deviceCount=$(xmllint --xpath 'count(//KNX/Project/Installations/Installation/Topology/Area/Line/'$segment'DeviceInstance[contains(@Name, '$deviceName')])' $xml)
 
 echo "{\"ComObjects\": ["
 
 n=0
 for (( d=1; d<= $deviceCount ; d++ )); do
 
-	deviceXml=$(xmllint  --xpath '//KNX/Project/Installations/Installation/Topology/Area/Line/DeviceInstance[contains(@Name, "'$deviceName'")]['$d']' $xml)
+	deviceXml=$(xmllint  --xpath '//KNX/Project/Installations/Installation/Topology/Area/Line/'$segment'DeviceInstance[contains(@Name, '$deviceName')]['$d']' $xml)
 
 	if [[ "X$deviceXml" == "X" ]] ; then
 		continue
 	fi
 
 	count=$(echo -e "$deviceXml" | xmllint --xpath 'count(//DeviceInstance/ComObjectInstanceRefs/ComObjectInstanceRef)' -)
+
 	for (( i=1; i<= $count ; i++ )); do
 		id=$(echo $deviceXml | xmllint --xpath 'string(//DeviceInstance/ComObjectInstanceRefs/ComObjectInstanceRef['$i']/@RefId)' -)
 
