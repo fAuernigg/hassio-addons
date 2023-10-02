@@ -38,11 +38,12 @@ deviceStop=""
 data=""
 
 p=P-0128
+xmlfilename=0
 
 i=100
 while [[ $i -le 999 ]] ; do
         p="P-0"$(echo "ibase=10;obase=16;$i" |bc)
-        if [[ -f "$folder/$p/0.xml" ]] ; then
+        if [[ -f "$folder/$p/$xmlfilename.xml" ]] ; then
                 break
         fi
         i=$((i+1))
@@ -50,33 +51,64 @@ done
 
 
 #replace/remove "xmlns= " attrib for performance problems
-xml="$folder/$p/0.xml"
+xml="$folder/$p/$xmlfilename.xml"
 
 # remove online lookup causing xmlns attribute. (link does not exist)
 sed -i 's/ xmlns=/ NIXxmlns=/' $xml
 
+function printGroup()
+{
+	xml=$1
+	id=$2
+	group=$3
+	n=$4
+
+	if [[ ! -n $group ]] ; then
+		return
+	fi
+
+	groupDec=$(xmllint --xpath 'string(//KNX/Project/Installations/Installation/GroupAddresses/GroupRanges/GroupRange/GroupRange/GroupAddress[@Id="'$group'"]/@Address)' $xml)
+	groupName=$(xmllint --xpath 'string(//KNX/Project/Installations/Installation/GroupAddresses/GroupRanges/GroupRange/GroupRange/GroupAddress[@Id="'$group'"]/@Name)' $xml)
+
+
+	if [[ ! -n $groupName && -n $groupDec ]] ; then
+		return
+	fi
+
+	if [[ $n -ge 1 ]] ; then
+		echo ","
+	fi
+	n=$((n+1))
+
+	echo "{\"ComRefId\": \"$id\", \"Group\":$groupDec,\"Name\":\"$groupName\"}"
+}
 
 function printGroups() {
 	xml=$1
 	deviceXml=$2
 	i=$3
 	groupName=$4
-
 	n=$5
+	id=$6
+	p=$7
+	xmlfilename=$8
+
 	# processing send groups
 	groupCount=$(echo $deviceXml | xmllint --xpath 'count(/DeviceInstance/ComObjectInstanceRefs/ComObjectInstanceRef['$i']/Connectors/'$groupName')' -)
-	for (( j=1; j<= $groupCount ; j++ )); do
-		group=$(echo $deviceXml | xmllint --xpath 'string(/DeviceInstance/ComObjectInstanceRefs/ComObjectInstanceRef['$i']/Connectors/'$groupName'['$j']/@GroupAddressRefId)' -)
-		if [[ -n $group ]] ; then
-			groupDec=$(xmllint --xpath 'string(//KNX/Project/Installations/Installation/GroupAddresses/GroupRanges/GroupRange/GroupRange/GroupAddress[@Id="'$group'"]/@Address)' $xml)
-			groupName=$(xmllint --xpath 'string(//KNX/Project/Installations/Installation/GroupAddresses/GroupRanges/GroupRange/GroupRange/GroupAddress[@Id="'$group'"]/@Name)' $xml)
-			if [[ $n -ge 1 ]] ; then
-				echo ","
-			fi
-			n=$((n+1))
-			echo "{\"ComRefId\": \"$id\", \"Group\":$groupDec,\"Name\":\"$groupName\"}"
-		fi
-	done
+	if [[ $groupCount -ne 0 ]] ; then
+		for (( j=1; j<= $groupCount ; j++ )); do
+			group=$(echo $deviceXml | xmllint --xpath 'string(/DeviceInstance/ComObjectInstanceRefs/ComObjectInstanceRef['$i']/Connectors/'$groupName'['$j']/@GroupAddressRefId)' -)
+			printGroup $xml $id $group $n
+		done
+	#ETS6 xml, and only once
+	elif [[ "$groupName" == "Send" ]] ; then
+		groupCount=$(echo $deviceXml | xmllint --xpath 'count(/DeviceInstance/ComObjectInstanceRefs/ComObjectInstanceRef['$i']/@Links)' -)
+		for (( j=1; j<= $groupCount ; j++ )); do
+			group=$(echo $deviceXml | xmllint --xpath 'string(/DeviceInstance/ComObjectInstanceRefs/ComObjectInstanceRef['$i']/@Links['$j'])' -)
+			printGroup $xml $id "$p-${xmlfilename}_$group" $n
+		done
+	fi
+
 	return $n
 }
 
@@ -123,10 +155,10 @@ for (( d=1; d<= $deviceCount ; d++ )); do
 	for (( i=1; i<= $count ; i++ )); do
 		id=$(echo $deviceXml | xmllint --xpath 'string(//DeviceInstance/ComObjectInstanceRefs/ComObjectInstanceRef['$i']/@RefId)' -)
 
-		printGroups "$xml" "$deviceXml" "$i" "Send" $n
+		printGroups "$xml" "$deviceXml" "$i" "Send" $n $id $p $xmlfilename
 		n=$?
 
-		printGroups "$xml" "$deviceXml" "$i" "Receive" $n
+		printGroups "$xml" "$deviceXml" "$i" "Receive" $n $id $p $xmlfilename
 		n=$?
 	done
 
@@ -136,66 +168,3 @@ done
 
 echo "] }"
 exit 0
-
-
-i=0
-
-
-
-# legacy code based on sed.
-# removed redundant json pairs group, type, channel
-
-# find all references group addresses and replace address by slash separated rep.
-#echo $deviceXml | while read -r line ; do
-cat "$folder/$p/0.xml" | while read -r line ; do
-	if [[ "X$deviceStart" == "X" ]] ; then
-		deviceStart=$(echo $line | sed -e  "s/^.*\\<DeviceInstance Id=\"\(.\+\)\" Address=\"[0-9]\+\" Name=\"\($deviceName.*\)\".*$/\2=\1/g;tx;d;:x")
-		#deviceStart=$(echo "$line" | grep -E '\<DeviceInstance Id=\".*\" Address=\".*\" Name=\"$deviceName')
-		continue
-	elif [[ "X$deviceStop" == "X" ]] ; then
-		deviceStop=$(echo $line | grep -E "</DeviceInstance>")
-	fi
-
-	#if [[ "X$deviceStart" != "X" ]] ; then
-	#	echo "device found: $line"
-	#fi
-
-	if [[ "X$deviceStart" == "X" && "X$deviceStop" == "X" ]] ; then
-		continue
-	elif [[ "X$deviceStart" != "X" && "X$deviceStop" != "X" ]] ; then
-		deviceStart=""
-		deviceStop=""
-		exit 0
-	fi
-
-	groupId=$(echo $line | sed -e "s/.*GroupAddressRefId=\"\([0-9A-Za-z\_\-]\+\)\".*/\1/g;tx;d;:x")
-	if [[ "X$groupId" == "X" ]] ; then
-		d=$(echo $line | sed -e "s/.*<ComObjectInstanceRef RefId=\"\([0-9A-Za-z\_\-]\+\)\".\+/\1/g;tx;d;:x")
-		if [[ -n "$d" ]] ; then
-			data=$d
-		fi
-		continue
-	fi
-	id=$data
-
-	groupDec=$(cat "$folder/$p/0.xml" | sed -e "s/.*<GroupAddress Id=\"$groupId\" Address=\"\([0-9]\+\)\".*/\1/g;tx;d;:x")
-	groupName=$(cat "$folder/$p/0.xml" | sed -e "s/.*<GroupAddress Id=\"$groupId\" Address=\"\([0-9]\+\)\" Name=\"\([a-zA-Z0-9 \-\+\._]\+\)\".*/\2/g;tx;d;:x")
-	if [[ "X$groupDec" == "X" ]] ; then
-		continue
-	fi
-	group=$($spath/knxAddrToGroup.sh "$groupDec")
-
-	funcType=$(rgrep "$id" $folder/* | sed -e "s/.*<ComObjectRef Id=\"$id\"\s.*FunctionText=\"\([^\"]\+\)\"\s\+ObjectSize=\"\([^\"]\+\)\"\s\+[a-zA-Z]\+.*$/\1,\2/g;tx;d;:x")
-	channel=$(echo $id | sed -e "s/.\+FCCB_O-\([0-9]\+\).*/\1/g;tx;d;:x")
-	channel=$((channel/5))
-
-
-	if [[ $i -ge 1 ]] ; then
-		echo ","
-	fi
-	i=$((i+1))
-
-	echo "{\"channel\":$channel,\"type\":\"$funcType\",\"group\":\"$group\",\"groupD\":$groupDec,\"DPT\":\"$data\",\"name\":\"$groupName\"}"
-done
-
-echo "] }"
