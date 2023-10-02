@@ -19,3 +19,7 @@
 ## 0.22
 
 - Support ETS6 group address format in xml export
+
+## 0.23
+
+- Add ETS6 Hardware2ProgramRefId

@@ -151,9 +151,13 @@ for (( d=1; d<= $deviceCount ; d++ )); do
 	fi
 
 	count=$(echo -e "$deviceXml" | xmllint --xpath 'count(//DeviceInstance/ComObjectInstanceRefs/ComObjectInstanceRef)' -)
+	hwrefid=$(echo -e "$deviceXml" | xmllint --xpath 'string(//DeviceInstance/@Hardware2ProgramRefId)' -)
 
 	for (( i=1; i<= $count ; i++ )); do
 		id=$(echo $deviceXml | xmllint --xpath 'string(//DeviceInstance/ComObjectInstanceRefs/ComObjectInstanceRef['$i']/@RefId)' -)
+		if [[ "$id" != "M-*" ]] ; then
+			id="${hwrefid}_${id}"
+		fi
 
 		printGroups "$xml" "$deviceXml" "$i" "Send" $n $id $p $xmlfilename
 		n=$?
