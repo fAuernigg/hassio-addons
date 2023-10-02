@@ -14,4 +14,8 @@
 
 ## 0.20 / 0.21
 
-- Support Segement in knxproj file
+- Support Segment in knxproj file
+
+## 0.22
+
+- Support ETS6 group address format in xml export
