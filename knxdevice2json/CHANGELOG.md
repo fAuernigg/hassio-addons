@@ -23,3 +23,7 @@
 ## 0.23
 
 - Add ETS6 Hardware2ProgramRefId
+
+## 0.24
+
+- Fix ETS5 and ETS6 support

@@ -22,7 +22,8 @@ f=$1
 
 folder=$tmppath$(echo $f | tr "." "-" | tr "/" "_")
 
-rm -Rf $tmppath ; mkdir -p $tmppath
+mkdir -p $tmppath
+rm -Rf $folder
 unzip -qo $f -d $folder
 
 #filterprefix for my own knx devices
@@ -50,8 +51,11 @@ while [[ $i -le 999 ]] ; do
 done
 
 
+
 #replace/remove "xmlns= " attrib for performance problems
 xml="$folder/$p/$xmlfilename.xml"
+
+etsversion=$(xmllint --xpath 'string(//KNX/@CreatedBy)' $xml)
 
 # remove online lookup causing xmlns attribute. (link does not exist)
 sed -i 's/ xmlns=/ NIXxmlns=/' $xml
@@ -101,7 +105,7 @@ function printGroups() {
 			printGroup $xml $id $group $n
 		done
 	#ETS6 xml, and only once
-	elif [[ "$groupName" == "Send" ]] ; then
+	elif [[ "$groupName" == "Send" && "$etsversion" != "ETS5" ]] ; then
 		groupCount=$(echo $deviceXml | xmllint --xpath 'count(/DeviceInstance/ComObjectInstanceRefs/ComObjectInstanceRef['$i']/@Links)' -)
 		for (( j=1; j<= $groupCount ; j++ )); do
 			group=$(echo $deviceXml | xmllint --xpath 'string(/DeviceInstance/ComObjectInstanceRefs/ComObjectInstanceRef['$i']/@Links['$j'])' -)
@@ -155,7 +159,7 @@ for (( d=1; d<= $deviceCount ; d++ )); do
 
 	for (( i=1; i<= $count ; i++ )); do
 		id=$(echo $deviceXml | xmllint --xpath 'string(//DeviceInstance/ComObjectInstanceRefs/ComObjectInstanceRef['$i']/@RefId)' -)
-		if [[ "$id" != "M-*" ]] ; then
+		if [[ "$id" != M-* && "$etsversion" != "ETS5" ]] ; then
 			id="${hwrefid}_${id}"
 		fi
 
