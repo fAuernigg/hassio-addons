@@ -83,7 +83,9 @@ function printGroup()
 	fi
 	n=$((n+1))
 
-	echo "{\"ComRefId\": \"$id\", \"Group\":$groupDec,\"Name\":\"$groupName\"}"
+	if [[ -n "$id" && -n "$groupDec" ]] ; then
+		echo "{\"ComRefId\": \"$id\", \"Group\":$groupDec,\"Name\":\"$groupName\"}"
+	fi
 }
 
 function printGroups() {
@@ -101,14 +103,18 @@ function printGroups() {
 	if [[ $groupCount -ne 0 ]] ; then
 		for (( j=1; j<= $groupCount ; j++ )); do
 			group=$(echo $deviceXml | xmllint --xpath 'string(/DeviceInstance/ComObjectInstanceRefs/ComObjectInstanceRef['$i']/Connectors/'$groupName'['$j']/@GroupAddressRefId)' -)
-			printGroup $xml $id $group $n
+			if [ -n "$group" ] ; then
+				printGroup $xml $id $group $n
+			fi
 		done
 	#ETS6 xml, and only once
 	elif [[ "$groupName" == "Send" && "$etsversion" != "ETS5" ]] ; then
 		groupCount=$(echo $deviceXml | xmllint --xpath 'count(/DeviceInstance/ComObjectInstanceRefs/ComObjectInstanceRef['$i']/@Links)' -)
 		for (( j=1; j<= $groupCount ; j++ )); do
 			group=$(echo $deviceXml | xmllint --xpath 'string(/DeviceInstance/ComObjectInstanceRefs/ComObjectInstanceRef['$i']/@Links['$j'])' -)
-			printGroup $xml $id "$p-${xmlfilename}_$group" $n
+			if [ -n "$group" ] ; then
+				printGroup $xml $id "$p-${xmlfilename}_$group" $n
+			fi
 		done
 	fi
 
