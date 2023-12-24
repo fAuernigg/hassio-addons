@@ -27,3 +27,7 @@
 ## 0.24
 
 - Fix ETS5 and ETS6 support
+
+## 0.25
+
+- Fix etsversion detection, skip empty group address entries
