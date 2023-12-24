@@ -8,7 +8,7 @@ segment=
 
 tmppath="/share/knxtmp/"
 if [[ ! -d "$tmppath" ]] ; then
-	tmppath="/tmp/knxtmp"
+	tmppath="/tmp/knxtmp/"
 	#echo "Dev environment: Using knx tmp directory: $tmppath"
 fi
 
@@ -50,15 +50,14 @@ while [[ $i -le 999 ]] ; do
         i=$((i+1))
 done
 
-
-
 #replace/remove "xmlns= " attrib for performance problems
 xml="$folder/$p/$xmlfilename.xml"
 
-etsversion=$(xmllint --xpath 'string(//KNX/@CreatedBy)' $xml)
-
 # remove online lookup causing xmlns attribute. (link does not exist)
 sed -i 's/ xmlns=/ NIXxmlns=/' $xml
+
+etsversion=$(xmllint --xpath 'string(//KNX/@CreatedBy)' $xml)
+
 
 function printGroup()
 {
