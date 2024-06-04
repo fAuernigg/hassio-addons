@@ -26,7 +26,7 @@
   "schema": {
     "video_sources": [{"input": "str", "name": "str", "format": "str"}]
   },
-  "XXXimage": "fAuernigg/{arch}-addon-videoserver",
+  "image": "mrxa/{arch}-addon-videoserver",
   "services": [],
   "udev": true,
   "usb": true,
@@ -45,3 +45,4 @@
     "8090/tcp": "Port of videoserver output stream"
   }
 }
+
